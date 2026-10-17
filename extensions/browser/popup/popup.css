@@ -1,0 +1,29 @@
+body {
+    width: 300px;
+    font-family: system-ui, -apple-system, sans-serif;
+    padding: 16px;
+    color: #334155;
+}
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+.dot.green { background-color: #22c55e; }
+.dot.yellow { background-color: #eab308; }
+.dot.red { background-color: #ef4444; }
+.hidden { display: none; }
+button {
+    margin-top: 8px;
+    padding: 6px 12px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}

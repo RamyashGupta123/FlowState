@@ -1,0 +1,133 @@
+# FlowState — .gitignore
+
+# ────────────────────────────────────────────
+# Environment & secrets — NEVER commit these
+# ────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+*.secret
+secrets/
+
+# ────────────────────────────────────────────
+# Scaffolding & internal development scratch
+# ────────────────────────────────────────────
+generate_*.py
+scratch/
+
+# ────────────────────────────────────────────
+# Java / Spring Boot
+# ────────────────────────────────────────────
+target/
+*.class
+*.jar
+*.war
+*.ear
+**/.mvn/wrapper/maven-wrapper.jar
+!**/.mvn/wrapper/maven-wrapper.properties
+hs_err_pid*
+replay_pid*
+.idea/
+*.iml
+*.iws
+*.ipr
+.factorypath
+.project
+.classpath
+.settings/
+bin/
+
+# ────────────────────────────────────────────
+# Python
+# ────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.pytest_cache/
+**/.pytest_cache/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.venv/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.env/
+*.sqlite3
+*.db
+
+# ────────────────────────────────────────────
+# Flutter / Dart
+# ────────────────────────────────────────────
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.metadata
+.pub-cache/
+.pub/
+build/
+*.g.dart
+*.freezed.dart
+.packages
+pubspec.lock
+!apps/flutter_app/lib/
+
+# ────────────────────────────────────────────
+# Node / JavaScript / Browser Extension
+# ────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+dist/
+.cache/
+*.tsbuildinfo
+coverage/
+
+# ────────────────────────────────────────────
+# OS
+# ────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+*~
+
+# ────────────────────────────────────────────
+# Docker
+# ────────────────────────────────────────────
+docker-compose.override.yml
+
+# ────────────────────────────────────────────
+# Logs
+# ────────────────────────────────────────────
+logs/
+*.log
+spring.log
+
+# ────────────────────────────────────────────
+# ML artifacts — keep code, exclude large binary models
+# ────────────────────────────────────────────
+ml/models/*.pkl
+ml/models/*.joblib
+ml/models/*.onnx
+!ml/models/.gitkeep
+ml/data/raw/
+ml/data/processed/

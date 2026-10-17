@@ -1,0 +1,50 @@
+# FlowState Linux Agent Configuration
+# Copy to config.yaml and fill in your values.
+
+# Backend API endpoint
+api_url: http://localhost:8080
+
+# JWT token (obtained after login: POST /api/auth/login)
+api_token: paste_your_jwt_token_here
+
+# Device ID (assigned by backend on registration)
+# Set to 'auto' to register automatically on first run
+device_id: auto
+
+# How often to check the active window (seconds)
+poll_interval_seconds: 30
+
+# Minimum session duration to record (seconds)
+min_session_duration_seconds: 10
+
+# Privacy: consent must be set to true to start monitoring
+# You will be shown a consent notice on first run
+consent_given: false
+
+# Local event buffer location
+buffer_db_path: buffer.db
+
+# How long to keep synced events in local buffer (days)
+buffer_retention_days: 7
+
+# How many polls between each sync attempt
+sync_every_n_polls: 10
+
+# Activity exclusions - events from these will be marked 'excluded'
+exclusions:
+  # Process names to exclude
+  apps:
+    - keepassxc
+    - gnome-keyring-daemon
+    - seahorse
+    - 1password
+  # Do NOT collect any activity when these apps are foreground
+  browser_domains: []
+
+# Window title privacy
+# 'none' = never collect titles (safest)
+# 'scrubbed' = collect but apply privacy filters
+title_collection: none
+
+# Agent version (do not edit)
+agent_version: '1.0.0'

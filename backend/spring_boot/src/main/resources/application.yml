@@ -1,0 +1,45 @@
+spring:
+  application:
+    name: flowstate-backend
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/flowstate}
+    username: ${SPRING_DATASOURCE_USERNAME:flowstate_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:changeme_in_production}
+    driver-class-name: ${SPRING_DATASOURCE_DRIVER:org.postgresql.Driver}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+
+server:
+  port: ${SERVER_PORT:8080}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      show-details: always
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+flowstate:
+  security:
+    jwt:
+      secret: ${JWT_SECRET:verysecretverysecretverysecretverysecretverysecret}
+      expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+  ml:
+    url: ${ML_SERVICE_URL:http://localhost:8001}

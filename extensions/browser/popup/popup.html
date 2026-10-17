@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="header">
+        <h2>FlowState</h2>
+        <div id="status-dot" class="dot red"></div>
+    </div>
+    
+    <!-- 1. Consent View -->
+    <div id="consent-view" class="hidden">
+        <h3>Privacy Notice</h3>
+        <p>FlowState monitors active tab domain metrics locally to provide wellbeing insights. No keystrokes, form entries, or screen contents are captured.</p>
+        <button id="btn-consent">I Consent</button>
+    </div>
+
+    <!-- 2. Login View -->
+    <div id="login-view" class="hidden">
+        <h3>Account Login</h3>
+        <div style="margin-bottom: 8px;">
+            <label style="font-size: 11px;">Server URL:</label>
+            <input type="text" id="login-server" value="http://localhost:8080" style="width: 100%; box-sizing: border-box; padding: 4px;">
+        </div>
+        <div style="margin-bottom: 8px;">
+            <label style="font-size: 11px;">Email:</label>
+            <input type="email" id="login-email" placeholder="name@flowstate.com" style="width: 100%; box-sizing: border-box; padding: 4px;">
+        </div>
+        <div style="margin-bottom: 8px;">
+            <label style="font-size: 11px;">Password:</label>
+            <input type="password" id="login-password" placeholder="••••••••" style="width: 100%; box-sizing: border-box; padding: 4px;">
+        </div>
+        <button id="btn-login" style="width: 100%;">Connect &amp; Login</button>
+        <div id="login-error" style="color: #ef4444; font-size: 11px; margin-top: 6px;"></div>
+    </div>
+    
+    <!-- 3. Main Dashboard View -->
+    <div id="main-view" class="hidden">
+        <p>Status: <span id="status-text">Active</span></p>
+        <p>Current: <span id="current-domain">-</span></p>
+        <p>Pending events: <span id="pending-count">0</span></p>
+        <p style="font-size: 11px; color: #64748b; margin-bottom: 2px;">Account: <span id="connected-user" style="font-weight: 600;">-</span></p>
+        <p style="font-size: 11px; color: #64748b; margin-top: 2px;">Server: <span id="connected-server">http://localhost:8080</span></p>
+        
+        <div id="sync-feedback" style="color: red; font-size: 12px; margin-bottom: 5px;"></div>
+        
+        <div style="display: flex; gap: 6px;">
+            <button id="btn-pause" style="flex: 1;">Pause</button>
+            <button id="btn-sync" style="flex: 1;">Sync Now</button>
+        </div>
+        <button id="btn-logout" style="width: 100%; background: #64748b; margin-top: 10px;">Logout</button>
+    </div>
+    
+    <script src="popup.js" type="module"></script>
+</body>
+</html>

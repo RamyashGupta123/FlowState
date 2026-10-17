@@ -1,0 +1,319 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://flowstate.app/schemas/activity_event.schema.json",
+  "title": "ActivityEvent",
+  "description": "Unified activity event schema for FlowState. Used by all platform agents (Linux, Android, Browser, Windows) to represent a single recorded activity interval in a privacy-minimized, normalized form.",
+  "type": "object",
+  "required": [
+    "event_id",
+    "user_id",
+    "device_id",
+    "platform",
+    "timestamp",
+    "timezone",
+    "session_start",
+    "session_end",
+    "duration_seconds",
+    "sync_status"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Globally unique event identifier (UUID v4). Used for duplicate-event prevention."
+    },
+    "user_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Identifier of the FlowState user who owns this event."
+    },
+    "device_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Identifier of the device or agent that recorded this event."
+    },
+    "platform": {
+      "type": "string",
+      "enum": ["linux", "android", "browser", "windows", "macos"],
+      "description": "The platform or agent type that produced this event."
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 timestamp (UTC) of when the event was recorded by the agent."
+    },
+    "timezone": {
+      "type": "string",
+      "description": "IANA timezone of the device at the time of recording (e.g., 'America/New_York'). Preserves local-time context for insights."
+    },
+    "app_identifier": {
+      "type": ["string", "null"],
+      "description": "Platform-specific application identifier. For Linux: process name or desktop file ID (e.g., 'code', 'firefox'). For Android: package name. Null for browser-only events.",
+      "examples": ["code.visualstudio.code", "org.mozilla.firefox", "com.android.chrome"]
+    },
+    "app_name": {
+      "type": ["string", "null"],
+      "maxLength": 256,
+      "description": "Human-readable application display name. May be empty if not resolvable. Scrubbed of sensitive window title content."
+    },
+    "window_title_summary": {
+      "type": ["string", "null"],
+      "maxLength": 128,
+      "description": "Optional privacy-scrubbed summary of the window title. Must never contain passwords, personal names from messages, or sensitive file paths. Agents should omit this field if privacy filtering cannot be guaranteed."
+    },
+    "browser_domain": {
+      "type": ["string", "null"],
+      "format": "hostname",
+      "description": "Registered domain of the active browser tab (e.g., 'github.com'). Never includes URL path, query parameters, or fragments. Null for non-browser events or excluded domains.",
+      "examples": ["github.com", "youtube.com", "docs.google.com"]
+    },
+    "browser_tab_title_category": {
+      "type": ["string", "null"],
+      "description": "Optional coarse category inferred from the tab title by the browser extension (e.g., 'video', 'documentation', 'social'). Never the raw title.",
+      "enum": ["video", "documentation", "article", "social", "productivity", "shopping", "other", null]
+    },
+    "session_start": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 timestamp (UTC) when this activity session began."
+    },
+    "session_end": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 timestamp (UTC) when this activity session ended."
+    },
+    "duration_seconds": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 86400,
+      "description": "Duration of the activity session in seconds. Must be positive and not exceed 24 hours."
+    },
+    "idle_seconds": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "description": "Number of seconds the user was idle within this session. Used to distinguish active engagement from background activity."
+    },
+    "app_switch_count": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "description": "Number of application/tab switches observed during this session. Indicates context-switching behavior."
+    },
+    "declared_goal_id": {
+      "type": ["string", "null"],
+      "format": "uuid",
+      "description": "The ID of the active user-declared goal at the time of recording. Null if no goal was active."
+    },
+    "focus_session_id": {
+      "type": ["string", "null"],
+      "format": "uuid",
+      "description": "The ID of the active focus session at the time of recording. Null if not in a focus session."
+    },
+    "activity_category": {
+      "type": ["string", "null"],
+      "enum": [
+        "productive_work",
+        "learning_research",
+        "communication_admin",
+        "intentional_leisure",
+        "break_idle",
+        "potential_distraction",
+        "unknown",
+        null
+      ],
+      "description": "The classified activity category. Null before classification has been applied."
+    },
+    "goal_alignment": {
+      "type": ["string", "null"],
+      "enum": ["aligned", "neutral", "misaligned", "unknown", null],
+      "description": "Whether this activity aligns with the user's declared goal. Null if no goal was active or classification is pending."
+    },
+    "classification_confidence": {
+      "type": ["number", "null"],
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "description": "Confidence score of the classification, between 0.0 and 1.0. Null before classification."
+    },
+    "classification_source": {
+      "type": ["string", "null"],
+      "enum": ["rules", "ml_model", "user_override", "pending", null],
+      "description": "The mechanism that produced the activity_category."
+    },
+    "classification_evidence": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "string"
+      },
+      "description": "Short, human-readable explanations for why this classification was assigned (e.g., ['App is in productive category', 'Focus session active']).",
+      "maxItems": 10
+    },
+    "requires_user_confirmation": {
+      "type": "boolean",
+      "default": false,
+      "description": "True if confidence is below the confirmation threshold and the user should be asked to verify the category."
+    },
+    "user_feedback": {
+      "type": ["object", "null"],
+      "description": "User correction or confirmation of the classification.",
+      "additionalProperties": false,
+      "required": ["corrected_category", "submitted_at"],
+      "properties": {
+        "corrected_category": {
+          "type": "string",
+          "enum": [
+            "productive_work",
+            "learning_research",
+            "communication_admin",
+            "intentional_leisure",
+            "break_idle",
+            "potential_distraction",
+            "unknown"
+          ]
+        },
+        "is_intentional": {
+          "type": ["boolean", "null"],
+          "description": "Whether the activity was intentional according to the user."
+        },
+        "notes": {
+          "type": ["string", "null"],
+          "maxLength": 512
+        },
+        "submitted_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "context_features": {
+      "type": ["object", "null"],
+      "description": "Derived context features used for classification. Stored for model reproducibility and debugging.",
+      "additionalProperties": false,
+      "properties": {
+        "time_of_day_slot": {
+          "type": ["string", "null"],
+          "enum": ["early_morning", "morning", "afternoon", "evening", "night", null]
+        },
+        "day_of_week": {
+          "type": ["string", "null"],
+          "enum": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday", null]
+        },
+        "is_focus_session_active": {
+          "type": ["boolean", "null"]
+        },
+        "switch_rate_per_minute": {
+          "type": ["number", "null"],
+          "minimum": 0
+        },
+        "idle_ratio": {
+          "type": ["number", "null"],
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "app_known_category": {
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "sync_status": {
+      "type": "string",
+      "enum": ["pending", "synced", "failed", "excluded"],
+      "description": "Synchronization state of this event. 'excluded' means the agent's privacy filter suppressed this event from being sent."
+    },
+    "agent_version": {
+      "type": ["string", "null"],
+      "description": "Version of the platform agent that recorded this event. Used for debugging schema compatibility."
+    },
+    "schema_version": {
+      "type": "string",
+      "const": "1.0",
+      "description": "Version of the ActivityEvent schema used."
+    }
+  },
+  "examples": [
+    {
+      "event_id": "550e8400-e29b-41d4-a716-446655440000",
+      "user_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "device_id": "d1e2f3a4-b5c6-7890-dcba-fedcba987654",
+      "platform": "linux",
+      "timestamp": "2026-10-10T16:30:00Z",
+      "timezone": "Asia/Kolkata",
+      "app_identifier": "code",
+      "app_name": "Visual Studio Code",
+      "window_title_summary": null,
+      "browser_domain": null,
+      "browser_tab_title_category": null,
+      "session_start": "2026-10-10T16:00:00Z",
+      "session_end": "2026-10-10T16:30:00Z",
+      "duration_seconds": 1800,
+      "idle_seconds": 120,
+      "app_switch_count": 3,
+      "declared_goal_id": "goal-uuid-here",
+      "focus_session_id": "session-uuid-here",
+      "activity_category": "productive_work",
+      "goal_alignment": "aligned",
+      "classification_confidence": 0.91,
+      "classification_source": "ml_model",
+      "classification_evidence": [
+        "App 'code' is in the 'development' known-app category",
+        "Focus session is active",
+        "Idle ratio 6.7% — sustained engagement",
+        "Low switch rate (0.1 per minute)"
+      ],
+      "requires_user_confirmation": false,
+      "user_feedback": null,
+      "context_features": {
+        "time_of_day_slot": "afternoon",
+        "day_of_week": "saturday",
+        "is_focus_session_active": true,
+        "switch_rate_per_minute": 0.1,
+        "idle_ratio": 0.067,
+        "app_known_category": "development"
+      },
+      "sync_status": "synced",
+      "agent_version": "1.0.0",
+      "schema_version": "1.0"
+    },
+    {
+      "event_id": "660e9500-f30c-52e5-b827-557766551111",
+      "user_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "device_id": "e2f3a4b5-c6d7-8901-edcb-abcdef012345",
+      "platform": "browser",
+      "timestamp": "2026-10-10T17:05:00Z",
+      "timezone": "Asia/Kolkata",
+      "app_identifier": null,
+      "app_name": null,
+      "window_title_summary": null,
+      "browser_domain": "youtube.com",
+      "browser_tab_title_category": "video",
+      "session_start": "2026-10-10T17:00:00Z",
+      "session_end": "2026-10-10T17:05:00Z",
+      "duration_seconds": 300,
+      "idle_seconds": 10,
+      "app_switch_count": 0,
+      "declared_goal_id": "goal-uuid-here",
+      "focus_session_id": null,
+      "activity_category": "unknown",
+      "goal_alignment": "unknown",
+      "classification_confidence": 0.42,
+      "classification_source": "rules",
+      "classification_evidence": [
+        "Domain 'youtube.com' can be productive (tutorials) or leisure",
+        "No focus session active",
+        "Short session — insufficient evidence"
+      ],
+      "requires_user_confirmation": true,
+      "user_feedback": null,
+      "context_features": {
+        "time_of_day_slot": "afternoon",
+        "day_of_week": "saturday",
+        "is_focus_session_active": false,
+        "switch_rate_per_minute": 0.0,
+        "idle_ratio": 0.033,
+        "app_known_category": "video_streaming"
+      },
+      "sync_status": "synced",
+      "agent_version": "1.0.0",
+      "schema_version": "1.0"
+    }
+  ]
+}
